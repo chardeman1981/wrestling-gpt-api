@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: RTC Wrestling Analysis API
+  version: 1.0.0
+  description: Full-stack API for Custom GPT to analyze wrestling video data, generate reports, and self-heal through error diagnostics.
+servers:
+  - url: https://yourusername.github.io/rtc-analysis-api
+paths:
+  /analyze:
+    post:
+      summary: Run full match analysis on uploaded video
+      operationId: analyzeMatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                video_url:
+                  type: string
+                  description: Public URL to the match video
+                mode:
+                  type: string
+                  enum: [full, compact, precision, failsafe]
+                  default: full
+      responses:
+        '200':
+          description: Successful analysis report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+                  pdf_url:
+                    type: string
+
+  /generate-pdf:
+    post:
+      summary: Generate PDF report from match analysis
+      operationId: generatePDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                match_id:
+                  type: string
+                  description: Unique ID of the analyzed match
+      responses:
+        '200':
+          description: PDF generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pdf_url:
+                    type: string
+
+  /error-log:
+    get:
+      summary: Retrieve the current error log from recent processing
+      operationId: getErrorLog
+      responses:
+        '200':
+          description: Error log retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+
+  /clear-error-log:
+    post:
+      summary: Clear the engine's current error memory buffer
+      operationId: clearErrorLog
+      responses:
+        '200':
+          description: Log cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "cleared"
+
+components:
+  schemas:
+    MatchAnalysisRequest:
+      type: object
+      properties:
+        video_url:
+          type: string
+        mode:
+          type: string
