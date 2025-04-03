@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  title: Hardeman RTC Wrestling Analysis API
+  version: 1.0.0
+  description: |
+    An API for high-performance wrestling video analysis. Accepts match data and returns tactical breakdowns, fatigue reports, timestamps, flaw-to-drill maps, and generates PDF output.
+
+servers:
+  - url: https://yourusername.github.io/wrestling-gpt-api
+
+paths:
+  /analyze:
+    post:
+      summary: Run match analysis
+      operationId: analyzeMatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchAnalysisRequest'
+      responses:
+        '200':
+          description: Full match analysis report and drill prescriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchAnalysisResponse'
+
+  /errors:
+    post:
+      summary: Submit and auto-correct error logs from analysis
+      operationId: submitErrors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorLogInput'
+      responses:
+        '200':
+          description: Auto-adjusted corrections applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorLogResponse'
+
+components:
+  schemas:
+    MatchAnalysisRequest:
+      type: object
+      properties:
+        match_id:
+          type: string
+          example: "ghsa_trad_kegley_01"
+        video_url:
+          type: string
+          example: "https://example.com/match.mp4"
+        metadata:
+          type: object
+          properties:
+            wrestler_name:
+              type: string
+              example: "Hardeman"
+            opponent_name:
+              type: string
+              example: "Kegley"
+            result:
+              type: string
+              example: "Fall"
+            singlet_color:
+              type: string
+              example: "White"
+            score:
+              type: string
+              example: "3-2"
+            match_time:
+              type: string
+              example: "1:26"
+            source:
+              type: string
+              example: "MatBoss"
+
+    MatchAnalysisResponse:
+      type: object
+      properties:
+        pdf_report_url:
+          type: string
+          example: "https://example.com/reports/hardeman-vs-kegley.pdf"
+        summary:
+          type: string
+          example: "Hardeman controlled early, scored a T3, but got reversed and pinned at 1:26 MB time."
+        flaws:
+          type: array
+          items:
+            type: string
+          example: ["Late hip sprawl", "Missed return chain"]
+        drills:
+          type: array
+          items:
+            type: string
+          example: ["ISO: Return Chain Rebuild", "Cue: Reattack Reset w/ Timer"]
+
+    ErrorLogInput:
+      type: object
+      properties:
+        match_id:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              error_type:
+                type: string
+                example: "timestamp_misalignment"
+              description:
+                type: string
+                example: "Predicted fall timestamp 0:54, actual fall at 1:26 MB time"
+              fix_applied:
+                type: string
+                example: "Adjusted timestamp to 1:26"
+
+    ErrorLogResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "Corrections applied"
+        updated_report_url:
+          type: string
+          example: "https://example.com/reports/updated_hardeman-kegley.pdf"
