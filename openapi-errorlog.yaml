@@ -1,0 +1,57 @@
+openapi: 3.1.0
+info:
+  title: RTC Engine Diagnostics
+  version: 1.0.0
+  description: Access error logs, fallback actions, and self-repair diagnostics from the wrestling video analysis engine.
+servers:
+  - url: https://yourusername.github.io/rtc-engine-gpt
+paths:
+  /error-log:
+    get:
+      operationId: getErrorLog
+      summary: Retrieve latest error log entries
+      parameters:
+        - name: match_id
+          in: query
+          required: false
+          description: Optional – limit errors to a specific match
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of error log entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                          format: date-time
+                        stage:
+                          type: string
+                          description: e.g., preprocessing, analysis, export
+                        module:
+                          type: string
+                          description: Module where error occurred
+                        error_type:
+                          type: string
+                          description: Short label (e.g., memory_overload)
+                        message:
+                          type: string
+                          description: Human-readable explanation
+                        resolution:
+                          type: string
+                          description: What fallback or fix was applied
+  /clear-error-log:
+    post:
+      operationId: clearErrorLog
+      summary: Clear the engine error log
+      responses:
+        '200':
+          description: Error log cleared successfully
